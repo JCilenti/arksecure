@@ -2,7 +2,7 @@ window.ARK_CONFIG = {
   owner: "Joseph Cilenti",
   email: "arksecurellc@gmail.com",
   github: "https://github.com/JCilenti",
-  linkedin: "", // Add your LinkedIn URL here.
+  linkedin: "https://www.linkedin.com/in/joseph-cilenti", // Add your LinkedIn URL here.
   siteName: "Ark Secure",
   tagline: "Your Digital Refuge",
   interests: [
