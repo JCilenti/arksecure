@@ -57,9 +57,7 @@
     socials: () => {
       const items = [
         `<span>GitHub</span><span>${link('github.com/JCilenti', config.github)}</span>`,
-        config.linkedin
-          ? `<span>LinkedIn</span><span>${link('linkedin.com/in/joseph-cilenti', config.linkedin)}</span>`
-          : `<span>LinkedIn</span><span class="muted">Add URL in assets/js/config.js</span>`,
+        `<span>LinkedIn</span><span>${link('linkedin.com/in/joseph-cilenti', config.linkedin)}</span>`,
         `<span>Email</span><span>${link(config.email, `mailto:${config.email}`, false)}</span>`
       ];
       return `<div class="command-grid">${items.join('')}</div>`;
