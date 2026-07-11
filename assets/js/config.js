@@ -2,7 +2,7 @@ window.ARK_CONFIG = {
   owner: "Joseph Cilenti",
   email: "arksecurellc@gmail.com",
   github: "https://github.com/JCilenti",
-  linkedin: "https://www.linkedin.com/in/joseph-cilenti",
+  linkedin: "https://www.linkedin.com/in/joseph-cilenti-0a682519a",
   siteName: "Ark Secure",
   tagline: "Your Digital Refuge",
   interests: [
