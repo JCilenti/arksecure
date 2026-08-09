@@ -182,7 +182,30 @@
       localStorage.setItem('ark-theme', mode);
       return `<p>Theme changed to <strong>${mode}</strong>.</p>`;
     },
+    banana: () => {
+      const banana =String.raw`
+             _   
+      //\
+     V  \
+      \  \_
+       \,'.\`-.
+        |\ \`. \`.
+        ( \  \`. \`-.                        _,.-:\
+         \ \   \`.  \`-._             __..--' ,-';/
+          \ \`.   \`-.   \`-..___..---'   _.--' ,'/
+           \`. \`.    \`-._        __..--'    ,' /
+             \`. \`-_     \`\`--..''       _.-' ,'
+               \`-_ \`-.___        __,--'   ,'
+                  \`-.__  \`----"""    __.-'
+                       \`--..____..--'
+`;
 
+      return `
+        <pre class="banana-art" aria-label="ASCII art banana">${escapeHtml(banana)}</pre>
+        <p class="muted">Potassium levels nominal.</p>
+      `;
+    },
+    
     pwd: () => '<p>/home/guest/network</p>',
     ls: () => '<p>about/ &nbsp; projects/ &nbsp; blog/ &nbsp; socials/ &nbsp; contact.txt</p>',
     date: () => `<p>${escapeHtml(new Date().toString())}</p>`,
