@@ -184,7 +184,7 @@
     },
     banana: () => {
       const banana =String.raw`
-             _   
+
       //\
      V  \
       \  \_
@@ -205,7 +205,7 @@
         <p class="muted">Potassium levels nominal.</p>
       `;
     },
-    
+
     pwd: () => '<p>/home/guest/network</p>',
     ls: () => '<p>about/ &nbsp; projects/ &nbsp; blog/ &nbsp; socials/ &nbsp; contact.txt</p>',
     date: () => `<p>${escapeHtml(new Date().toString())}</p>`,
