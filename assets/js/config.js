@@ -5,6 +5,7 @@ window.ARK_CONFIG = {
   linkedin: "https://www.linkedin.com/in/joseph-cilenti-0a682519a",
   siteName: "Ark Secure",
   tagline: "Your Digital Refuge",
+
   interests: [
     "Cybersecurity & penetration testing",
     "Network engineering & homelabs",
@@ -15,6 +16,7 @@ window.ARK_CONFIG = {
     "Amateur radio, Meshtastic & resilient communications",
     "3D printing, robotics & technical experimentation"
   ],
+
   projects: [
     {
       id: "arksecure",
@@ -43,6 +45,17 @@ window.ARK_CONFIG = {
       summary: "A command-line workflow for printing articles and messages to an Epson receipt printer without root privileges.",
       stack: "Python, ESC/POS, udev, CUPS",
       url: ""
+    }
+  ],
+
+  blogPosts: [
+    {
+      slug: "software-security",
+      title: "Software Security",
+      date: "2026-08-09",
+      categories: ["Cybersecurity", "Software Security"],
+      summary: "An introduction to software security and why protecting data integrity, authenticity, and non-repudiation matters.",
+      url: "blog/software-security.html"
     }
   ]
 };

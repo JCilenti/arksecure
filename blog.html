@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Ark Secure technical articles covering cybersecurity, software security, Linux, networking, AI, radio, and maker projects.">
+
+    <title>Blog // Ark Secure</title>
+
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/css/site.css">
+</head>
+
+<body class="page">
+
+    <main class="shell">
+
+        <header class="window-bar">
+            <div class="window-controls" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class="window-title">
+                guest@arksecure: ~/blog
+            </div>
+        </header>
+
+        <article class="content">
+
+            <a class="back-link" href="index.html">
+                ← return to terminal
+            </a>
+
+            <p class="eyebrow">ls ~/blog</p>
+
+            <h1>Blog</h1>
+
+            <p class="lede">
+                Notes and articles on cybersecurity, Linux, networking,
+                software, AI, radio, and the systems I am learning and building.
+            </p>
+
+            <div class="blog-toolbar">
+                <label for="blog-filter">Filter articles</label>
+                <input
+                    id="blog-filter"
+                    type="search"
+                    placeholder="Try: cybersecurity, linux, networking..."
+                    autocomplete="off"
+                >
+            </div>
+
+            <section id="blog-list" class="blog-grid" aria-live="polite"></section>
+
+            <p id="blog-empty" class="muted" hidden>
+                No articles match that filter.
+            </p>
+
+            <footer class="page-footer">
+                Ark Secure // Learn. Build. Document.
+            </footer>
+
+        </article>
+
+        <div class="status-bar">
+            <span><span class="status-dot"></span> BLOG</span>
+            <span>ARK SECURE</span>
+            <span>READ / LEARN / SHARE</span>
+        </div>
+
+    </main>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/blog.js"></script>
+</body>
+
+</html>

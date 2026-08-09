@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+
   const config = window.ARK_CONFIG;
   const output = document.querySelector('#output');
   const form = document.querySelector('#terminal-form');
@@ -13,13 +14,24 @@
   let booted = false;
 
   const escapeHtml = (value) => String(value)
-    .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;').replaceAll('"', '&quot;')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
 
   const link = (label, href, external = true) => {
     const target = external ? ' target="_blank" rel="noopener noreferrer"' : '';
     return `<a href="${escapeHtml(href)}"${target}>${escapeHtml(label)}</a>`;
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(`${dateString}T00:00:00`);
+    return date.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   const banner = String.raw`
@@ -38,6 +50,8 @@
   <span>interests</span><span>Technical interests and focus areas</span>
   <span>socials</span><span>GitHub, LinkedIn, and contact links</span>
   <span>projects</span><span>Browse featured technical projects</span>
+  <span>blog [filter]</span><span>Browse articles or filter by topic</span>
+  <span>read &lt;slug&gt;</span><span>Open a blog article</span>
   <span>email</span><span>Open your email client to contact me</span>
   <span>history</span><span>Show commands entered this session</span>
   <span>banner</span><span>Display the Ark Secure banner</span>
@@ -67,12 +81,85 @@
       if (args[0]) {
         const query = args.join(' ').toLowerCase();
         const project = config.projects.find(p => p.id === query || p.name.toLowerCase().includes(query));
-        if (!project) return `<p class="error">Project not found. Run <code>projects</code> to list available projects.</p>`;
-        return `<article class="project-detail"><h3>${escapeHtml(project.name)}</h3><p>${escapeHtml(project.summary)}</p><p><span class="muted">Stack:</span> ${escapeHtml(project.stack)}</p>${project.url ? `<p>${link('Open repository →', project.url)}</p>` : '<p class="muted">Repository or write-up coming soon.</p>'}</article>`;
+
+        if (!project) {
+          return `<p class="error">Project not found. Run <code>projects</code> to list available projects.</p>`;
+        }
+
+        return `
+<article class="project-detail">
+  <h3>${escapeHtml(project.name)}</h3>
+  <p>${escapeHtml(project.summary)}</p>
+  <p><span class="muted">Stack:</span> ${escapeHtml(project.stack)}</p>
+  ${project.url ? `<p>${link('Open repository →', project.url)}</p>` : '<p class="muted">Repository or write-up coming soon.</p>'}
+</article>`;
       }
-      return `<div class="project-list">${config.projects.map((p, i) => `
-        <article><span class="project-number">0${i + 1}</span><div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.summary)}</p><button class="inline-command" data-command="projects ${escapeHtml(p.id)}">projects ${escapeHtml(p.id)}</button></div></article>`).join('')}</div>
-        <p>${link('Open the full projects page →', 'projects.html', false)}</p>`;
+
+      return `
+<div class="project-list">
+  ${config.projects.map((p, i) => `
+  <article>
+    <span class="project-number">${String(i + 1).padStart(2, '0')}</span>
+    <div>
+      <h3>${escapeHtml(p.name)}</h3>
+      <p>${escapeHtml(p.summary)}</p>
+      <button class="inline-command" data-command="projects ${escapeHtml(p.id)}">projects ${escapeHtml(p.id)}</button>
+    </div>
+  </article>`).join('')}
+</div>
+<p>${link('Open the full projects page →', 'projects.html', false)}</p>`;
+    },
+
+    blog: (args) => {
+      const posts = Array.isArray(config.blogPosts) ? config.blogPosts : [];
+      const query = args.join(' ').trim().toLowerCase();
+
+      const matches = query
+        ? posts.filter(post => {
+            const searchable = [
+              post.slug,
+              post.title,
+              post.summary,
+              ...(post.categories || [])
+            ].join(' ').toLowerCase();
+            return searchable.includes(query);
+          })
+        : posts;
+
+      if (!matches.length) {
+        return `<p class="error">No blog posts match <code>${escapeHtml(query)}</code>.</p><p class="muted">Run <code>blog</code> to list all articles.</p>`;
+      }
+
+      return `
+<div class="blog-list">
+  ${matches.map((post, i) => `
+  <article>
+    <span class="blog-number">${String(i + 1).padStart(2, '0')}</span>
+    <div>
+      <h3>${escapeHtml(post.title)}</h3>
+      <p class="blog-meta">${escapeHtml(formatDate(post.date))} // ${(post.categories || []).map(escapeHtml).join(' / ')}</p>
+      <p>${escapeHtml(post.summary)}</p>
+      <button class="inline-command" data-command="read ${escapeHtml(post.slug)}">read ${escapeHtml(post.slug)}</button>
+    </div>
+  </article>`).join('')}
+</div>
+<p>${link('Open the full blog →', 'blog.html', false)}</p>`;
+    },
+
+    read: (args) => {
+      if (!args[0]) {
+        return '<p class="error">Usage: <code>read &lt;slug&gt;</code></p><p class="muted">Run <code>blog</code> to see available article slugs.</p>';
+      }
+
+      const slug = args.join(' ').toLowerCase();
+      const post = (config.blogPosts || []).find(item => item.slug.toLowerCase() === slug);
+
+      if (!post) {
+        return `<p class="error">Article not found: ${escapeHtml(slug)}</p><p class="muted">Run <code>blog</code> to list available articles.</p>`;
+      }
+
+      window.location.href = post.url;
+      return `<p>Opening <strong>${escapeHtml(post.title)}</strong>…</p>`;
     },
 
     email: () => {
@@ -88,14 +175,16 @@
     banner: () => `<pre class="ascii-banner" aria-label="Ark Secure ASCII banner">${escapeHtml(banner)}</pre>`,
     clear: () => { output.innerHTML = ''; return ''; },
     about: () => { window.location.href = 'about.html'; return '<p>Opening profile…</p>'; },
+
     theme: () => {
       document.documentElement.classList.toggle('light-theme');
       const mode = document.documentElement.classList.contains('light-theme') ? 'light' : 'dark';
       localStorage.setItem('ark-theme', mode);
       return `<p>Theme changed to <strong>${mode}</strong>.</p>`;
     },
+
     pwd: () => '<p>/home/guest/network</p>',
-    ls: () => '<p>about/ &nbsp; projects/ &nbsp; socials/ &nbsp; contact.txt</p>',
+    ls: () => '<p>about/ &nbsp; projects/ &nbsp; blog/ &nbsp; socials/ &nbsp; contact.txt</p>',
     date: () => `<p>${escapeHtml(new Date().toString())}</p>`,
     sudo: () => '<p class="error">guest is not in the sudoers file. This incident will be reported to the ark.</p>',
     neofetch: () => `<pre class="mini-fetch">ARK@SECURE\n----------\nOS: Human + Linux\nHost: Your Digital Refuge\nShell: arksh\nFocus: Build. Learn. Connect.</pre>`
@@ -110,18 +199,28 @@
     terminal.scrollTop = terminal.scrollHeight;
   };
 
-  const printPrompt = (command) => print(`<div class="echo"><span class="prompt-user">guest@arksecure</span><span class="prompt-separator">:</span><span class="prompt-path">~</span><span class="prompt-symbol">$</span> ${escapeHtml(command)}</div>`);
+  const printPrompt = (command) => print(`
+<div class="echo">
+  <span class="prompt-user">guest@arksecure</span><span class="prompt-separator">:</span><span class="prompt-path">~</span><span class="prompt-symbol">$</span>
+  ${escapeHtml(command)}
+</div>`);
 
   const execute = (raw) => {
     const trimmed = raw.trim();
     if (!trimmed) return;
+
     history.push(trimmed);
     historyIndex = history.length;
     printPrompt(trimmed);
+
     const [name, ...args] = trimmed.split(/\s+/);
     const key = name.toLowerCase();
-    if (commands[key]) print(commands[key](args));
-    else print(`<p class="error">arksh: command not found: ${escapeHtml(name)}</p><p class="muted">Run <code>help</code> to see available commands.</p>`);
+
+    if (commands[key]) {
+      print(commands[key](args));
+    } else {
+      print(`<p class="error">arksh: command not found: ${escapeHtml(name)}</p><p class="muted">Run <code>help</code> to see available commands.</p>`);
+    }
   };
 
   form.addEventListener('submit', (event) => {
@@ -155,25 +254,42 @@
 
   document.addEventListener('click', (event) => {
     const button = event.target.closest('[data-command]');
+
     if (button) {
       input.value = button.dataset.command;
       input.focus();
-    } else if (!event.target.closest('a,button')) input.focus();
+    } else if (!event.target.closest('a,button')) {
+      input.focus();
+    }
   });
 
   mobileHelp.addEventListener('click', () => execute('help'));
 
-  const updateClock = () => { clock.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); };
-  updateClock(); setInterval(updateClock, 30000);
+  const updateClock = () => {
+    clock.textContent = new Date().toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
-  if (localStorage.getItem('ark-theme') === 'light') document.documentElement.classList.add('light-theme');
+  updateClock();
+  setInterval(updateClock, 30000);
+
+  if (localStorage.getItem('ark-theme') === 'light') {
+    document.documentElement.classList.add('light-theme');
+  }
 
   const boot = () => {
     if (booted) return;
     booted = true;
+
     print(`<pre class="ascii-banner" aria-label="Ark Secure ASCII banner">${escapeHtml(banner)}</pre>`);
-    print(`<p>Welcome to <strong>Ark Secure</strong>, a technical networking hub.</p><p>Type <button class="inline-command" data-command="help">help</button> to view commands or <button class="inline-command" data-command="whois">whois</button> to begin.</p>`, 'welcome');
+    print(`
+<p>Welcome to <strong>Ark Secure</strong>, a technical networking hub.</p>
+<p>Type <button class="inline-command" data-command="help">help</button> to view commands, <button class="inline-command" data-command="whois">whois</button> to learn more, or <button class="inline-command" data-command="blog">blog</button> to read articles.</p>`, 'welcome');
+
     input.focus();
   };
+
   boot();
 })();
